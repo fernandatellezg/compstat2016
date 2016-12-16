@@ -159,17 +159,17 @@ shinyServer(function(input, output) {
     
     output$apra <- renderPlot({
       x <- seq(-100, 100, length=100)
-      plot(x, ndist(), type="l", lty=2, xlab="x value",ylab="Density", main=paste('A priori a'))
+      plot(x, ndist(), type="l", lty=2, xlab="x value",ylab="Density", main=paste('A priori Beta1'))
     })
     
     output$aprb <- renderPlot({
       x <- seq(-100, 100, length=100)
-      plot(x, ndist(), type="l", lty=2, xlab="x value",ylab="Density", main=paste('A priori b'))
+      plot(x, ndist(), type="l", lty=2, xlab="x value",ylab="Density", main=paste('A priori Beta0'))
     })
     
     output$aprg <- renderPlot({
       x <- seq(-100, 100, length=100)
-      plot(x, gdist(), type="l", lty=2, xlab="x value",ylab="Density", main=paste('A priori eps'))
+      plot(x, gdist(), type="l", lty=2, xlab="x value",ylab="Density", main=paste('A priori sigma^2'))
     })
     
     
@@ -230,20 +230,51 @@ shinyServer(function(input, output) {
     })
     
     output$histos<-renderPlot({
-      burnIn = input$long_cadenas*.20
-      acceptance = 1-mean(duplicated(mcmc()[-(1:burnIn),]))
+      burnIn <- input$burn_in
+      x1<-seq(from=-2,to=4,by=0.5)
+      acceptance <- 1-mean(duplicated(mcmc()[-(1:burnIn),]))
       par(mfrow = c(2,3))
-      hist(mcmc()[-(1:burnIn),1],nclass=30,  main="Posterior of b1", xlab="Parametro" )
-      abline(v = mean(mcmc()[-(1:burnIn),1]))
-      hist(mcmc()[-(1:burnIn),2],nclass=30, main="Posterior of b0", xlab="Parametro")
-      abline(v = mean(mcmc()[-(1:burnIn),2]))
+      hist(mcmc()[-(1:burnIn),2],nclass=30, main="Posterior de Beta0", xlab="Parametro")
+      abline(v = mean(mcmc()[-(1:burnIn),2]),col="blue")
+      hist(mcmc()[-(1:burnIn),1],nclass=30,  main="Posterior de Beta1", xlab="Parametro" )
+      abline(v = mean(mcmc()[-(1:burnIn),1]),col="blue")
+      #curve(dnorm(x1,0,1),add=TRUE)
       hist(mcmc()[-(1:burnIn),3],nclass=30, main="Posterior of sigma^2", xlab="Parametro")
-      abline(v = mean(mcmc()[-(1:burnIn),3]) )
+      abline(v = mean(mcmc()[-(1:burnIn),3]),col="blue")
       plot(mcmc()[-(1:burnIn),1], type = "l", xlab="Iteraciones" , main = "Chain values of b1" )
       plot(mcmc()[-(1:burnIn),2], type = "l", xlab="Iteraciones" , main = "Chain values of b0")
       plot(mcmc()[-(1:burnIn),3], type = "l", xlab="Iteraciones" , main = "Chain values of sigma^2")
     })
     
+    
+    output$comparizon<-renderPlot({
+      burnIn <- input$burn_in
+      acceptance <- 1-mean(duplicated(mcmc()[-(1:burnIn),]))
+      par(mfrow = c(3,1))
+      hist(mcmc()[-(1:burnIn),2],nclass=30, main="Posterior vs apriori(azul) de Beta0", xlab="Parametro", prob=TRUE, xlim=c(-1,max(mcmc()[-(1:burnIn),2])))
+      density(mcmc()[-(1:burnIn),2],color="blue")
+      curve(dnorm(x,mean=0,sd=1),add=TRUE,col="blue")
+      
+      hist(mcmc()[-(1:burnIn),1],nclass=30,  main="Posterior vs apriori(azul) de Beta1", xlab="Parametro", prob=TRUE, xlim=c(-1,max(mcmc()[-(1:burnIn),1])))
+      density(mcmc()[-(1:burnIn),1],color="blue")
+      curve(dnorm(x,mean=0,sd=1),add=TRUE,col="blue")
+      
+      #abline(v = mean(mcmc()[-(1:burnIn),2]),col="blue")
+      hist(mcmc()[-(1:burnIn),3],nclass=30, main="Posterior vs apriori of sigma^2", xlab="Parametro", prob=TRUE,ylim=c(0,0.7), xlim=c(0,max(mcmc()[-(1:burnIn),3])))
+      density(mcmc()[-(1:burnIn),3],color="blue")
+      curve(dinvgamma(x,1,1),add=TRUE,col="blue")
+      #abline(v = mean(mcmc()[-(1:burnIn),3]),col="blue")
+    })
+    
+    output$aprioris<-renderPlot({
+      burnIn <- input$burn_in
+      acceptance <- 1-mean(duplicated(mcmc()[-(1:burnIn),]))
+      x <- seq(-100, 100, length=100)
+      par(mfrow = c(1,3))
+      plot(x, ndist(), type="line", lty=2, xlab="x value",ylab="Density", main=paste('A priori Beta1'))
+      plot(x, ndist(), type="line", lty=2, xlab="x value",ylab="Density", main=paste('A priori Beta1'))
+      plot(x, gdist(), type="line", lty=2, xlab="x value",ylab="Density", main=paste('A priori sigma^2'))
+    })
 
 }) #shiny server function
 

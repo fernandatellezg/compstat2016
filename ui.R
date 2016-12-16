@@ -64,15 +64,18 @@ shinyUI(fluidPage(title="Estadistica Computacional",
                                               #                   selected = 2:4),
                                               selectInput("vi", "Variable Independiente:", choices = c('Comisiones pagadas'='comisiones','Ventas netas'='ventas')),
                                               sliderInput('cadenas', label = 'Numero de cadenas', value = 1, min = 1, max = 5, step = 1),
-                                              sliderInput('long_cadenas', label = 'Longitud de la cadena', min = 1000, max = 100000, value =1000, step = 1000)
-                                              #sliderInput('burn_in', label = 'Burn-in', min = 100, max = 1000, value =100, step = 100)
+                                              sliderInput('long_cadenas', label = 'Longitud de la cadena', min = 1000, max = 20000, value =5000, step = 1000),
+                                              sliderInput('burn_in', label = 'Burn-in', min = 100, max = 5000, value =100, step = 100)
                                             ), 
                                             mainPanel(
+                                              h5("Con un modelo de la forma Beta0 + Beta1*X= Y"),
+                                              br(),
+                                              plotOutput('aprioris'),
                                               plotOutput('histos'),
                                               br(),
-                                              plotOutput('apra'),
-                                              plotOutput('aprb'),
-                                              plotOutput('aprg'),
+                                              plotOutput('comparizon'),
+                                              br(),
+                                              h4("Los resultados de la simulaci??n son los siguientes"),
                                               br(),
                                             
                                               p('Resultados simulacion'),
